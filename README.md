@@ -136,4 +136,4 @@ src/
 
 ## 📄 Licença
 
-MIT © [Seu Nome](https://github.com/seu-usuario)
+MIT © [Seu Nome](https://github.com/Henriqueue)
