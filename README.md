@@ -1,4 +1,4 @@
-# 🎵 Last.fm Wrapped
+# 🎵 Last.fm Wrapped — v3
 
 > Visualize seu ano em música — no estilo Spotify Wrapped — usando seu histórico real do Last.fm.
 
@@ -10,30 +10,30 @@
 
 ---
 
-## ✨ Sobre o projeto
+## ✨ O que há de novo na v3
 
-**Last.fm Wrapped** é uma aplicação web que transforma o histórico de scrobbles exportado do Last.fm em uma experiência visual animada — slides interativos com seus top artistas, músicas, álbuns e gêneros do ano, inspirados no Wrapped do Spotify.
+- **Download de slides como imagem** — botão flutuante em cada slide que salva um PNG de alta resolução (2×) usando `html2canvas-pro`
+- **Importação dinâmica** do html2canvas — não afeta o tempo de carregamento inicial
+- **Nomes de arquivo descritivos** — cada slide salvo com nome identificável (`lastfm-wrapped-top-artistas.png`, etc.)
 
-O projeto foi construído com foco em **data visualization**, **animações de transição** e **processamento de dados no cliente**, sem necessidade de backend.
-
----
-
-## 🖥️ Demo
-
-> Experimente com os dados de exemplo clicando em **"Ver com dados de exemplo"** — nenhum arquivo necessário.
+> Veja o histórico de versões: [v1](../v1-base) · [v2](../v2)
 
 ---
 
-## 📸 Slides
+## 🖥️ Slides
 
 | Slide | Conteúdo |
 |-------|----------|
-| 🎬 Cover | Ano em destaque + total de plays |
-| 🎤 Top Artistas | Top 5 com barras de progresso animadas |
-| 🎵 Top Músicas | Top 10 com contagem de plays |
-| 💿 Top Álbuns | Top 5 com barras de progresso |
-| 🎸 Top Gêneros | Gráfico de barras com Recharts |
-| 📊 Estatísticas | Cards com dados gerais do ano |
+| 🎬 Cover | Ano em destaque + total de plays com número animado |
+| 🎤 Top Artistas | Top 5 com foto, barras animadas e contagem |
+| 🎵 Top Músicas | Top 10 com capa do álbum e artista |
+| 💿 Top Álbuns | Top 5 com capa, barra de progresso e artista |
+| 🎸 Gêneros | Gráfico de barras colorido (Recharts) |
+| 🕐 Horários | AreaChart de distribuição de escuta por hora |
+| 📅 Artista do Mês | Grid com foto do artista dominante em cada mês |
+| 📊 Estatísticas | Cards com total de plays, hora mais ativa e mais |
+
+Todos os slides têm um botão **⬇️ Salvar slide** que gera um PNG para download.
 
 ---
 
@@ -41,34 +41,39 @@ O projeto foi construído com foco em **data visualization**, **animações de t
 
 ### Pré-requisitos
 
-- Node.js 20 ou superior
-- npm
+- Node.js 20+
+- API key do Last.fm — gratuita em [last.fm/api/account/create](https://www.last.fm/api/account/create)
 
 ### Instalação
 
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/spotify-wrapped-clone.git
-cd spotify-wrapped-clone
-
-# Instale as dependências
+git clone https://github.com/Henriqueue/Spotify-wrapped-clone
+cd Spotify-wrapped-clone
 npm install
+```
 
-# Inicie o servidor de desenvolvimento
+Crie o arquivo `.env.local` na raiz:
+
+```
+NEXT_PUBLIC_LASTFM_API_KEY=sua_api_key_aqui
+```
+
+```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) no navegador.
+Acesse [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📂 Como usar com seu histórico do Last.fm
+## 📂 Como usar
 
 1. Acesse [mainstream.ghan.nl/export.html](https://mainstream.ghan.nl/export.html)
-2. Digite seu usuário do Last.fm e clique em **Export as CSV**
-3. Aguarde o download do arquivo `.csv`
-4. Na aplicação, arraste o arquivo para a zona de upload ou clique para selecionar
-5. Navegue pelos slides com os botões ou teclado
+2. Digite seu usuário do Last.fm e exporte o CSV
+3. Arraste o arquivo para a zona de upload — ou clique em **"Ver com dados de exemplo"**
+4. Navegue pelos slides com os botões, teclado ou swipe (mobile)
+5. Use o seletor de ano para alternar entre diferentes anos
+6. Clique em **⬇️ Salvar slide** para baixar qualquer slide como imagem
 
 ---
 
@@ -80,8 +85,12 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 | [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
 | [Tailwind CSS v4](https://tailwindcss.com/) | Estilização com `@theme` |
 | [Motion](https://motion.dev/) | Animações e transições entre slides |
-| [Recharts](https://recharts.org/) | Gráfico de barras dos gêneros |
+| [Recharts](https://recharts.org/) | Gráficos de barras e área |
 | [PapaParse](https://www.papaparse.com/) | Parser do CSV do Last.fm |
+| [html2canvas-pro](https://github.com/yorickshan/html2canvas-pro) | Captura de slides como PNG |
+| [Wikipedia API](https://en.wikipedia.org/api/rest_v1/) | Fotos de artistas |
+| [Cover Art Archive](https://coverartarchive.org/) | Capas de álbuns via MusicBrainz |
+| [Last.fm API](https://www.last.fm/api) | Capas de músicas e fallback de álbuns |
 
 ---
 
@@ -90,50 +99,60 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 ```
 src/
 ├── app/
-│   ├── globals.css        # Tema global (Tailwind @theme)
+│   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx           # Orquestrador de slides
-│
+│   └── page.tsx                   ← orquestrador + área de captura
 ├── components/
 │   ├── slides/
-│   │   ├── SlideWrapper.tsx    # Animação de transição (AnimatePresence)
-│   │   ├── SlideCover.tsx      # Slide de abertura
+│   │   ├── SlideWrapper.tsx
+│   │   ├── SlideCover.tsx
 │   │   ├── SlideTopArtists.tsx
 │   │   ├── SlideTopSongs.tsx
 │   │   ├── SlideTopAlbums.tsx
-│   │   ├── SlideGenres.tsx     # Gráfico Recharts
-│   │   └── SlideStats.tsx      # Cards de estatísticas
+│   │   ├── SlideGenres.tsx
+│   │   ├── SlideHourly.tsx
+│   │   ├── SlideMonthlyArtist.tsx
+│   │   └── SlideStats.tsx
 │   └── ui/
-│       ├── UploadZone.tsx      # Drag & drop do CSV
-│       └── SlideNav.tsx        # Navegação e indicadores
-│
+│       ├── AnimatedNumber.tsx
+│       ├── ScreenshotButton.tsx   ← novo
+│       ├── UploadZone.tsx
+│       ├── SlideNav.tsx
+│       └── YearSelector.tsx
 ├── hooks/
-│   └── useWrappedData.ts       # Estado e lógica central
-│
+│   ├── useWrappedData.ts
+│   └── useScreenshot.ts           ← novo
 ├── lib/
-│   └── parser.ts               # CSV → WrappedData
-│
+│   ├── parser.ts
+│   └── lastfm.ts
 ├── data/
-│   └── sample.ts               # Dados de exemplo para demo
-│
+│   └── sample.ts
 └── types/
-    └── index.ts                # Interfaces TypeScript
+    └── index.ts
 ```
 
 ---
 
-## 🗺️ Próximos passos
+## 🗺️ Histórico de versões
 
-- [ ] Gráfico de distribuição de escuta por hora do dia (AreaChart)
-- [ ] Slide de artista dominante por mês
-- [ ] Animação de contagem crescente nos números
-- [ ] Suporte a swipe em dispositivos móveis
-- [ ] Integração com Last.fm API para buscar capas de álbuns e fotos de artistas
-- [ ] Botão de compartilhamento (geração de imagem com `html2canvas`)
-- [ ] Filtro por período (mês/trimestre)
+| Branch | O que foi adicionado |
+|--------|---------------------|
+| [`v1-base`](../../tree/v1-base) | Estrutura base: upload CSV, 6 slides, animações, Recharts, swipe, dados de exemplo |
+| [`v2`](../../tree/v2) | Fotos via Wikipedia, capas via Cover Art Archive, seletor de ano, artista do mês |
+| [`main`](../../tree/main) | Download de slides como PNG (html2canvas-pro) |
+
+---
+
+## 🗺️ Meus próximos passos
+
+- [ ] Streak de dias consecutivos ouvindo música
+- [ ] Slide de personalidade musical baseado nos gêneros
+- [ ] Compartilhamento via URL única (Supabase)
+- [ ] Modo comparação entre dois anos
+- [ ] Filtro por mês/trimestre
 
 ---
 
 ## 📄 Licença
 
-MIT © [Henriqueue](https://github.com/Henriqueue)
+MIT © [Henriqueie](https://github.com/Henriqueue)
