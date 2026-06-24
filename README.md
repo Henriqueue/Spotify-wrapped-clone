@@ -1,4 +1,4 @@
-# 🎵 Last.fm Wrapped
+# 🎵 Last.fm Wrapped — v2
 
 > Visualize seu ano em música — no estilo Spotify Wrapped — usando seu histórico real do Last.fm.
 
@@ -10,65 +10,85 @@
 
 ---
 
-✨ O que há de novo na v2
+## ✨ O que há de novo na v2
 
+- **Fotos de artistas reais** via Wikipedia Thumbnail API (sem autenticação)
+- **Capas de álbuns e músicas** via Cover Art Archive (MusicBrainz) + Last.fm API como fallback
+- **Seletor de ano** — troca todo o Wrapped sem re-upload do CSV
+- **MBID nativo** — o parser agora usa os IDs do MusicBrainz que já estão no CSV para buscar capas com mais precisão
+- **Estado `enriching`** — os slides aparecem imediatamente enquanto as imagens carregam em background
 
-Fotos de artistas reais via Wikipedia Thumbnail API (sem autenticação)
-Capas de álbuns e músicas via Cover Art Archive (MusicBrainz) + Last.fm API como fallback
-Seletor de ano — troca todo o Wrapped sem re-upload do CSV
-MBID nativo — o parser agora usa os IDs do MusicBrainz que já estão no CSV para buscar capas com mais precisão
-Estado enriching — os slides aparecem imediatamente enquanto as imagens carregam em background
+> Veja a [v1](../v1-base) para a versão inicial sem imagens externas.
 
+---
 
+## 🖥️ Slides
 
-Veja a v1 para a versão inicial sem imagens externas.
+| Slide | Conteúdo |
+|-------|----------|
+| 🎬 Cover | Ano em destaque + total de plays com número animado |
+| 🎤 Top Artistas | Top 5 com foto, barras animadas e contagem |
+| 🎵 Top Músicas | Top 10 com capa do álbum e artista |
+| 💿 Top Álbuns | Top 5 com capa, barra de progresso e artista |
+| 🎸 Gêneros | Gráfico de barras colorido (Recharts) |
+| 🕐 Horários | AreaChart de distribuição de escuta por hora |
+| 📅 Artista do Mês | Grid com foto do artista dominante em cada mês |
+| 📊 Estatísticas | Cards com total de plays, hora mais ativa e mais |
 
+---
 
+## 🚀 Como rodar localmente
 
+### Pré-requisitos
 
-🖥️ Slides
+- Node.js 20+
+- API key do Last.fm — gratuita em [last.fm/api/account/create](https://www.last.fm/api/account/create)
 
-SlideConteúdo🎬 CoverAno em destaque + total de plays com número animado🎤 Top ArtistasTop 5 com foto, barras animadas e contagem🎵 Top MúsicasTop 10 com capa do álbum e artista💿 Top ÁlbunsTop 5 com capa, barra de progresso e artista🎸 GênerosGráfico de barras colorido (Recharts)🕐 HoráriosAreaChart de distribuição de escuta por hora📅 Artista do MêsGrid com foto do artista dominante em cada mês📊 EstatísticasCards com total de plays, hora mais ativa e mais
+### Instalação
 
-
-🚀 Como rodar localmente
-
-Pré-requisitos
-
-
-Node.js 20+
-API key do Last.fm — gratuita em last.fm/api/account/create
-
-
-Instalação
-
-bashgit clone https://github.com/seu-usuario/lastfm-wrapped.git
-cd lastfm-wrapped
+```bash
+git clone [https://github.com/Henriqueue/Spotify-wrapped-clone.git]
+cd Spotify-wrapped-clone.git
 git checkout v2
 npm install
+```
 
-Crie o arquivo .env.local na raiz:
+Crie o arquivo `.env.local` na raiz:
 
+```
 NEXT_PUBLIC_LASTFM_API_KEY=sua_api_key_aqui
+```
 
-bashnpm run dev
+```bash
+npm run dev
+```
 
-Acesse http://localhost:3000.
+Acesse [http://localhost:3000](http://localhost:3000).
 
+---
 
-📂 Como exportar seu histórico do Last.fm
+## 📂 Como exportar seu histórico do Last.fm
 
+1. Acesse [mainstream.ghan.nl/export.html](https://mainstream.ghan.nl/export.html)
+2. Digite seu usuário e clique em **Export as CSV**
+3. Arraste o arquivo `.csv` para a zona de upload
+4. Use o seletor de ano para alternar entre diferentes anos do seu histórico
 
-Acesse mainstream.ghan.nl/export.html
-Digite seu usuário e clique em Export as CSV
-Arraste o arquivo .csv para a zona de upload
-Use o seletor de ano para alternar entre diferentes anos do seu histórico
+---
 
+## 🛠️ Stack
 
-
-🛠️ Stack
-
-TecnologiaUsoNext.js 16Framework React com App RouterTypeScriptTipagem estáticaTailwind CSS v4Estilização com @themeMotionAnimações e transições entre slidesRechartsGráficos de barras e áreaPapaParseParser do CSV do Last.fmWikipedia APIFotos de artistasCover Art ArchiveCapas de álbuns via MusicBrainzLast.fm APICapas de músicas e fallback de álbuns
+| Tecnologia | Uso |
+|-----------|-----|
+| [Next.js 16](https://nextjs.org/) | Framework React com App Router |
+| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
+| [Tailwind CSS v4](https://tailwindcss.com/) | Estilização com `@theme` |
+| [Motion](https://motion.dev/) | Animações e transições entre slides |
+| [Recharts](https://recharts.org/) | Gráficos de barras e área |
+| [PapaParse](https://www.papaparse.com/) | Parser do CSV do Last.fm |
+| [Wikipedia API](https://en.wikipedia.org/api/rest_v1/) | Fotos de artistas |
+| [Cover Art Archive](https://coverartarchive.org/) | Capas de álbuns via MusicBrainz |
+| [Last.fm API](https://www.last.fm/api) | Capas de músicas e fallback de álbuns |
 
 ---
 
@@ -105,18 +125,20 @@ src/
 │   └── sample.ts
 └── types/
     └── index.ts                   ← MonthlyArtist + availableYears + mbid
-
 ```
+
 ---
 
-🗺️ Meus próximos passos (v3+)
+## 🗺️ Próximos passos (v3+)
 
- Download de cada slide como imagem (html2canvas)
- Streak de dias consecutivos ouvindo música
- Slide de personalidade musical baseado nos gêneros
- Compartilhamento via URL única (Supabase)
- Modo comparação entre dois anos
- 
+- [ ] Download de cada slide como imagem (html2canvas)
+- [ ] Streak de dias consecutivos ouvindo música
+- [ ] Slide de personalidade musical baseado nos gêneros
+- [ ] Compartilhamento via URL única (Supabase)
+- [ ] Modo comparação entre dois anos
+
+---
+
 ## 📄 Licença
 
-MIT © [Henriqueue](https://github.com/Henriqueue)
+MIT © [HenriqueUE](https://github.com/Henriqueue)
