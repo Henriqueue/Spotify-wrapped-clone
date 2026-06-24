@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "motion/react";
+import Image from "next/image";
 import type { WrappedData } from "@/types";
 
-interface SlideTopSongsProps {
-  data: WrappedData;
-}
+interface SlideTopSongsProps { data: WrappedData }
 
 export function SlideTopSongs({ data }: SlideTopSongsProps) {
   const top10 = data.topSongs.slice(0, 10);
@@ -24,56 +23,49 @@ export function SlideTopSongs({ data }: SlideTopSongsProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="text-4xl font-black text-white mb-8"
+        className="text-4xl font-black text-white mb-6"
       >
         Top Músicas
       </motion.h2>
 
       <div className="space-y-3">
-        {top10.map((song, index) => (
-          <motion.div
-            key={song.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index + 0.3 }}
-            className="flex items-center gap-3 group"
-          >
-            <span className={`
-              text-xs font-mono w-6 text-right shrink-0
-              ${index < 3 ? "text-purple-400 font-bold" : "text-spotify-gray"}
-            `}>
-              {index + 1}
-            </span>
+        {top10.map((song, index) => {
+          const img = data.songImages?.[song.name];
+          return (
+            <motion.div
+              key={song.name}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index + 0.3 }}
+              className="flex items-center gap-3"
+            >
+              <span className={`text-xs font-mono w-5 text-right shrink-0 ${index < 3 ? "text-purple-400 font-bold" : "text-spotify-gray"}`}>
+                {index + 1}
+              </span>
 
-            <div className="flex-1 min-w-0">
-              <p className={`
-                truncate font-medium
-                ${index === 0 ? "text-white text-base" : "text-spotify-lightgray text-sm"}
-              `}>
-                {song.name}
-              </p>
-            </div>
+              {/* Capa da música (álbum) */}
+              <div className="w-9 h-9 rounded overflow-hidden bg-white/10 shrink-0 relative">
+                {img ? (
+                  <Image src={img} alt={song.name} fill className="object-cover" unoptimized />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-sm">🎵</div>
+                )}
+              </div>
 
-            <span className="text-spotify-gray text-xs shrink-0">
-              {song.count}×
-            </span>
-          </motion.div>
-        ))}
+              <div className="flex-1 min-w-0">
+                <p className={`truncate font-medium ${index === 0 ? "text-white text-sm" : "text-spotify-lightgray text-xs"}`}>
+                  {song.name}
+                </p>
+                {song.artist && (
+                  <p className="text-spotify-gray text-xs truncate">{song.artist}</p>
+                )}
+              </div>
+
+              <span className="text-spotify-gray text-xs shrink-0">{song.count}×</span>
+            </motion.div>
+          );
+        })}
       </div>
-
-      {top10[0] && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="mt-8 text-center"
-        >
-          <p className="text-spotify-gray text-sm">
-            <span className="text-white font-bold">"{top10[0].name}"</span> foi sua{" "}
-            música do ano 🎶
-          </p>
-        </motion.div>
-      )}
     </div>
   );
 }
