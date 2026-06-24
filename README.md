@@ -10,130 +10,109 @@
 
 ---
 
-## ✨ Sobre o projeto
+✨ O que há de novo na v2
 
-**Last.fm Wrapped** é uma aplicação web que transforma o histórico de scrobbles exportado do Last.fm em uma experiência visual animada — slides interativos com seus top artistas, músicas, álbuns e gêneros do ano, inspirados no Wrapped do Spotify.
 
-O projeto foi construído com foco em **data visualization**, **animações de transição** e **processamento de dados no cliente**, sem necessidade de backend.
+Fotos de artistas reais via Wikipedia Thumbnail API (sem autenticação)
+Capas de álbuns e músicas via Cover Art Archive (MusicBrainz) + Last.fm API como fallback
+Seletor de ano — troca todo o Wrapped sem re-upload do CSV
+MBID nativo — o parser agora usa os IDs do MusicBrainz que já estão no CSV para buscar capas com mais precisão
+Estado enriching — os slides aparecem imediatamente enquanto as imagens carregam em background
 
----
 
-## 🖥️ Demo
 
-> Experimente com os dados de exemplo clicando em **"Ver com dados de exemplo"** — nenhum arquivo necessário.
+Veja a v1 para a versão inicial sem imagens externas.
 
----
 
-## 📸 Slides
 
-| Slide | Conteúdo |
-|-------|----------|
-| 🎬 Cover | Ano em destaque + total de plays |
-| 🎤 Top Artistas | Top 5 com barras de progresso animadas |
-| 🎵 Top Músicas | Top 10 com contagem de plays |
-| 💿 Top Álbuns | Top 5 com barras de progresso |
-| 🎸 Top Gêneros | Gráfico de barras com Recharts |
-| 📊 Estatísticas | Cards com dados gerais do ano |
 
----
+🖥️ Slides
 
-## 🚀 Como rodar localmente
+SlideConteúdo🎬 CoverAno em destaque + total de plays com número animado🎤 Top ArtistasTop 5 com foto, barras animadas e contagem🎵 Top MúsicasTop 10 com capa do álbum e artista💿 Top ÁlbunsTop 5 com capa, barra de progresso e artista🎸 GênerosGráfico de barras colorido (Recharts)🕐 HoráriosAreaChart de distribuição de escuta por hora📅 Artista do MêsGrid com foto do artista dominante em cada mês📊 EstatísticasCards com total de plays, hora mais ativa e mais
 
-### Pré-requisitos
 
-- Node.js 20 ou superior
-- npm
+🚀 Como rodar localmente
 
-### Instalação
+Pré-requisitos
 
-```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/spotify-wrapped-clone.git
-cd spotify-wrapped-clone
 
-# Instale as dependências
+Node.js 20+
+API key do Last.fm — gratuita em last.fm/api/account/create
+
+
+Instalação
+
+bashgit clone https://github.com/seu-usuario/lastfm-wrapped.git
+cd lastfm-wrapped
+git checkout v2
 npm install
 
-# Inicie o servidor de desenvolvimento
-npm run dev
-```
+Crie o arquivo .env.local na raiz:
 
-Acesse [http://localhost:3000](http://localhost:3000) no navegador.
+NEXT_PUBLIC_LASTFM_API_KEY=sua_api_key_aqui
 
----
+bashnpm run dev
 
-## 📂 Como usar com seu histórico do Last.fm
+Acesse http://localhost:3000.
 
-1. Acesse [mainstream.ghan.nl/export.html](https://mainstream.ghan.nl/export.html)
-2. Digite seu usuário do Last.fm e clique em **Export as CSV**
-3. Aguarde o download do arquivo `.csv`
-4. Na aplicação, arraste o arquivo para a zona de upload ou clique para selecionar
-5. Navegue pelos slides com os botões ou teclado
 
----
+📂 Como exportar seu histórico do Last.fm
 
-## 🛠️ Stack
 
-| Tecnologia | Uso |
-|-----------|-----|
-| [Next.js 16](https://nextjs.org/) | Framework React com App Router |
-| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
-| [Tailwind CSS v4](https://tailwindcss.com/) | Estilização com `@theme` |
-| [Motion](https://motion.dev/) | Animações e transições entre slides |
-| [Recharts](https://recharts.org/) | Gráfico de barras dos gêneros |
-| [PapaParse](https://www.papaparse.com/) | Parser do CSV do Last.fm |
+Acesse mainstream.ghan.nl/export.html
+Digite seu usuário e clique em Export as CSV
+Arraste o arquivo .csv para a zona de upload
+Use o seletor de ano para alternar entre diferentes anos do seu histórico
 
----
 
-## 📁 Estrutura do projeto
 
-```
+🛠️ Stack
+
+TecnologiaUsoNext.js 16Framework React com App RouterTypeScriptTipagem estáticaTailwind CSS v4Estilização com @themeMotionAnimações e transições entre slidesRechartsGráficos de barras e áreaPapaParseParser do CSV do Last.fmWikipedia APIFotos de artistasCover Art ArchiveCapas de álbuns via MusicBrainzLast.fm APICapas de músicas e fallback de álbuns
+
+
+📁 Estrutura do projeto
+
 src/
 ├── app/
-│   ├── globals.css        # Tema global (Tailwind @theme)
+│   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx           # Orquestrador de slides
-│
+│   └── page.tsx
 ├── components/
 │   ├── slides/
-│   │   ├── SlideWrapper.tsx    # Animação de transição (AnimatePresence)
-│   │   ├── SlideCover.tsx      # Slide de abertura
-│   │   ├── SlideTopArtists.tsx
-│   │   ├── SlideTopSongs.tsx
-│   │   ├── SlideTopAlbums.tsx
-│   │   ├── SlideGenres.tsx     # Gráfico Recharts
-│   │   └── SlideStats.tsx      # Cards de estatísticas
+│   │   ├── SlideWrapper.tsx
+│   │   ├── SlideCover.tsx
+│   │   ├── SlideTopArtists.tsx    ← fotos via Wikipedia
+│   │   ├── SlideTopSongs.tsx      ← capas via Last.fm
+│   │   ├── SlideTopAlbums.tsx     ← capas via Cover Art Archive
+│   │   ├── SlideGenres.tsx
+│   │   ├── SlideHourly.tsx
+│   │   ├── SlideMonthlyArtist.tsx ← fotos via Wikipedia
+│   │   └── SlideStats.tsx
 │   └── ui/
-│       ├── UploadZone.tsx      # Drag & drop do CSV
-│       └── SlideNav.tsx        # Navegação e indicadores
-│
+│       ├── AnimatedNumber.tsx
+│       ├── UploadZone.tsx
+│       ├── SlideNav.tsx           ← seletor de ano integrado
+│       └── YearSelector.tsx       ← novo
 ├── hooks/
-│   └── useWrappedData.ts       # Estado e lógica central
-│
+│   └── useWrappedData.ts          ← estado enriching + changeYear
 ├── lib/
-│   └── parser.ts               # CSV → WrappedData
-│
+│   ├── parser.ts                  ← MBID + filterByYear + getAvailableYears
+│   └── lastfm.ts                  ← Wikipedia + CAA + Last.fm
 ├── data/
-│   └── sample.ts               # Dados de exemplo para demo
-│
+│   └── sample.ts
 └── types/
-    └── index.ts                # Interfaces TypeScript
-```
+    └── index.ts                   ← MonthlyArtist + availableYears + mbid
 
----
 
-## 🗺️ Próximos passos
+🗺️ Meus próximos passos (v3+)
 
-- [ ] Gráfico de distribuição de escuta por hora do dia (AreaChart)
-- [ ] Slide de artista dominante por mês
-- [ ] Animação de contagem crescente nos números
-- [ ] Suporte a swipe em dispositivos móveis
-- [ ] Integração com Last.fm API para buscar capas de álbuns e fotos de artistas
-- [ ] Botão de compartilhamento (geração de imagem com `html2canvas`)
-- [ ] Filtro por período (mês/trimestre)
-
----
-
+ Download de cada slide como imagem (html2canvas)
+ Streak de dias consecutivos ouvindo música
+ Slide de personalidade musical baseado nos gêneros
+ Compartilhamento via URL única (Supabase)
+ Modo comparação entre dois anos
+ 
 ## 📄 Licença
 
-MIT © [Seu Nome](https://github.com/seu-usuario)
+MIT © [Henriqueue](https://github.com/seu-usuario)
