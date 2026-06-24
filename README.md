@@ -70,9 +70,11 @@ Use o seletor de ano para alternar entre diferentes anos do seu histórico
 
 TecnologiaUsoNext.js 16Framework React com App RouterTypeScriptTipagem estáticaTailwind CSS v4Estilização com @themeMotionAnimações e transições entre slidesRechartsGráficos de barras e áreaPapaParseParser do CSV do Last.fmWikipedia APIFotos de artistasCover Art ArchiveCapas de álbuns via MusicBrainzLast.fm APICapas de músicas e fallback de álbuns
 
+---
 
-📁 Estrutura do projeto
+## 📁 Estrutura do projeto
 
+```
 src/
 ├── app/
 │   ├── globals.css
@@ -104,6 +106,8 @@ src/
 └── types/
     └── index.ts                   ← MonthlyArtist + availableYears + mbid
 
+```
+---
 
 🗺️ Meus próximos passos (v3+)
 
@@ -115,4 +119,4 @@ src/
  
 ## 📄 Licença
 
-MIT © [Henriqueue](https://github.com/seu-usuario)
+MIT © [Henriqueue](https://github.com/Henriqueue)
