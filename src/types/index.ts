@@ -47,4 +47,3 @@ export interface WrappedData {
 }
 
 export type AppState = "idle" | "loading" | "enriching" | "ready" | "error";
-export type AppState = "idle" | "loading" | "enriching" | "ready" | "error";

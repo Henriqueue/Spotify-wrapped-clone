@@ -2,8 +2,10 @@
 
 import { useState, useRef } from "react";
 import { useWrappedData } from "@/hooks/useWrappedData";
+import { useScreenshot } from "@/hooks/useScreenshot";
 import { UploadZone } from "@/components/ui/UploadZone";
 import { SlideNav } from "@/components/ui/SlideNav";
+import { ScreenshotButton } from "@/components/ui/ScreenshotButton";
 import { SlideWrapper } from "@/components/slides/SlideWrapper";
 import { SlideCover } from "@/components/slides/SlideCover";
 import { SlideTopArtists } from "@/components/slides/SlideTopArtists";
@@ -17,9 +19,23 @@ import { SlideMonthlyArtist } from "@/components/slides/SlideMonthlyArtist";
 const TOTAL_SLIDES = 8;
 const SWIPE_THRESHOLD = 50;
 
+// Títulos dos slides — usados no nome do arquivo salvo
+const SLIDE_TITLES = [
+  "cover",
+  "top-artistas",
+  "top-musicas",
+  "top-albuns",
+  "generos",
+  "horarios",
+  "artista-do-mes",
+  "estatisticas",
+];
+
 export default function Home() {
   const { data, state, error, processFile, useSampleData, changeYear, reset } =
     useWrappedData();
+  const { screenshotState, captureSlide } = useScreenshot();
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const touchStartX = useRef<number | null>(null);
@@ -55,10 +71,12 @@ export default function Home() {
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const delta = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(delta) > SWIPE_THRESHOLD) {
-      delta > 0 ? goNext() : goPrev();
-    }
+    if (Math.abs(delta) > SWIPE_THRESHOLD) delta > 0 ? goNext() : goPrev();
     touchStartX.current = null;
+  };
+
+  const handleCapture = () => {
+    captureSlide(SLIDE_TITLES[currentSlide]);
   };
 
   if (state === "idle" || state === "error") {
@@ -102,6 +120,7 @@ export default function Home() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Badge "buscando imagens" */}
       {state === "enriching" && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2
                         bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
@@ -111,12 +130,29 @@ export default function Home() {
       )}
 
       <div className="relative h-full max-w-sm mx-auto">
-        <div className="relative h-full overflow-hidden pb-24">
-          <SlideWrapper slideKey={`slide-${currentSlide}-${data.year}`} direction={direction}>
+
+        {/* ── Área de captura ── o html2canvas vai fotografar exatamente isso */}
+        <div
+          id="slide-capture-area"
+          className="relative h-full overflow-hidden pb-24"
+        >
+          <SlideWrapper
+            slideKey={`slide-${currentSlide}-${data.year}`}
+            direction={direction}
+          >
             {slides[currentSlide]}
           </SlideWrapper>
         </div>
 
+        {/* Botão de screenshot — posicionado sobre o slide, fora da área de captura */}
+        <div className="absolute top-4 right-4 z-40">
+          <ScreenshotButton
+            onCapture={handleCapture}
+            state={screenshotState}
+          />
+        </div>
+
+        {/* Navegação */}
         <SlideNav
           current={currentSlide}
           total={TOTAL_SLIDES}
